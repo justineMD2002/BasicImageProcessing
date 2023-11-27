@@ -1,16 +1,20 @@
 using System.Drawing.Imaging;
+using AForge.Video;
+using AForge.Video.DirectShow;
+using ImageProcessingPractice;
 
 namespace ImageProcessingPractice
 {
     public partial class Form1 : Form
     {
-        Bitmap loaded;
-        Bitmap processed;
+        Bitmap loaded, processed;
+        Bitmap imageA, imageB;
+        Device[] mgaDevice = DeviceManager.GetAllDevices();
         public Form1()
         {
             InitializeComponent();
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
         }
 
         private void Form1_Load(object sender, EventArgs e) { }
@@ -23,7 +27,8 @@ namespace ImageProcessingPractice
         private void openFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
             loaded = new Bitmap(openFileDialog1.FileName);
-            pictureBox1.Image = loaded;
+            imageB = new Bitmap(openFileDialog1.FileName);
+            pictureBox1.Image = imageB;
         }
 
         private void copyPasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -108,7 +113,6 @@ namespace ImageProcessingPractice
             Color sample;
             Color gray;
             Byte graydata;
-            //Grayscale Convertion;
             for (int x = 0; x < loaded.Width; x++)
             {
                 for (int y = 0; y < loaded.Height; y++)
@@ -120,19 +124,16 @@ namespace ImageProcessingPractice
                 }
             }
 
-            //histogram 1d data;
-            int[] histdata = new int[256]; // array from 0 to 255
+            int[] histdata = new int[256];
             for (int x = 0; x < loaded.Width; x++)
             {
                 for (int y = 0; y < loaded.Height; y++)
                 {
                     sample = loaded.GetPixel(x, y);
-                    histdata[sample.R]++; // can be any color property r,g or b
+                    histdata[sample.R]++;
                 }
             }
 
-            // Bitmap Graph Generation
-            // Setting empty Bitmap with background color
             processed = new Bitmap(256, 800);
             for (int x = 0; x < 256; x++)
             {
@@ -141,7 +142,7 @@ namespace ImageProcessingPractice
                     processed.SetPixel(x, y, Color.White);
                 }
             }
-            // plotting points based from histdata
+
             for (int x = 0; x < 256; x++)
             {
                 for (int y = 0; y < Math.Min(histdata[x] / 5, processed.Height - 1); y++)
@@ -171,17 +172,15 @@ namespace ImageProcessingPractice
                     int G = pixel.G;
                     int B = pixel.B;
 
-                    // Calculate newRed, newGreen, newBlue
                     int newRed = (int)(0.393 * R + 0.769 * G + 0.189 * B);
                     int newGreen = (int)(0.349 * R + 0.686 * G + 0.168 * B);
                     int newBlue = (int)(0.272 * R + 0.534 * G + 0.131 * B);
 
-                    // Check conditions
+
                     R = (newRed > 255) ? 255 : newRed;
                     G = (newGreen > 255) ? 255 : newGreen;
                     B = (newBlue > 255) ? 255 : newBlue;
 
-                    // Set new RGB value
                     processed.SetPixel(x, y, Color.FromArgb(a, R, G, B));
                 }
             }
@@ -206,6 +205,72 @@ namespace ImageProcessingPractice
                 processed.Save(saveFileDialog.FileName, ImageFormat.Png);
                 MessageBox.Show("Image saved successfully.");
             }
+        }
+
+        private void openFileDialog2_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            imageA = new Bitmap(openFileDialog2.FileName);
+            pictureBox2.Image = imageA;
+        }
+
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image = null;
+            pictureBox2.Image = null;
+            pictureBox3.Image = null;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            openFileDialog2.ShowDialog();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (mgaDevice.Length > 0)   
+            {
+                Device d = DeviceManager.GetDevice(0);
+                d.ShowWindow(pictureBox1);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Bitmap res = new Bitmap(imageB.Width, imageB.Height);
+            Color mygreen = Color.FromArgb(0, 0, 255);
+            int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
+            int threshold = 5;
+
+            for (int x = 0; x < imageB.Width; x++)
+            {
+                for (int y = 0; y < imageB.Height; y++)
+                {
+                    Color pixel = imageB.GetPixel(x, y);
+                    Color backpixel = imageA.GetPixel(x, y);
+
+                    int grey = (pixel.R + pixel.G + pixel.B) / 3;
+                    int subtractvalue = Math.Abs(grey - greygreen);
+
+                    if (subtractvalue > threshold)
+                        res.SetPixel(x, y, pixel);
+                    else
+                        res.SetPixel(x, y, backpixel);
+                }
+            }
+            pictureBox3.Image = res;
+        }
+
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Device d = DeviceManager.GetDevice(0);
+            d.Stop();
         }
     }
 }
