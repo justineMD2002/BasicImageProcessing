@@ -4,13 +4,13 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using ImageProcessingPractice;
 using WebCamLib;
+using HNUDIP;
 namespace ImageProcessingPractice
 {
     public partial class Form1 : Form
     {
         Bitmap loaded, processed, resultImage;
         Bitmap imageA, imageB;
-        Boolean isCamera;
         Device selectedDevice;
         Device[] devices;
         public Form1()
