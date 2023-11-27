@@ -250,12 +250,12 @@ namespace ImageProcessingPractice
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if(pictureBox1.Image == null || pictureBox2.Image == null)
+            if (pictureBox2.Image == null)
             {
                 MessageBox.Show("Please input an image.");
                 return;
             }
-            ImageProcess.Subtract(ref imageB, ref imageA, ref resultImage, 100);
+
             resultImage = new Bitmap(imageB.Width, imageB.Height);
             Color mygreen = Color.FromArgb(0, 0, 255);
             int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
@@ -273,6 +273,7 @@ namespace ImageProcessingPractice
                 }
             }
             pictureBox3.Image = resultImage;
+            timer2.Start();
         }
 
 
@@ -285,13 +286,72 @@ namespace ImageProcessingPractice
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedDevice = DeviceManager.GetDevice(comboBox1.SelectedIndex);
-            selectedDevice.Init(pictureBox1.Height, pictureBox1.Width, pictureBox1.Handle.ToInt32());
-            timer1.Enabled = true;
+            selectedDevice.Init(pictureBox2.Height, pictureBox2.Width, pictureBox2.Handle.ToInt32());
+            timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (selectedDevice != null)
+            {
+                imageA = CaptureAndDisplayImage();
+                if (imageA != null)
+                {
+                    if (pictureBox2 != null && pictureBox2.Image != null)
+                    {
+                        pictureBox2.Image.Dispose();
+                    }
+                    pictureBox2.Image = imageA;
+                }
+            }
+        }
+
+        private Bitmap CaptureAndDisplayImage()
+        {
+            if (selectedDevice == null)
+            {
+                MessageBox.Show("No device selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
             selectedDevice.Sendmessage();
+            IDataObject data = Clipboard.GetDataObject();
+            if (data != null && data.GetData("System.Drawing.Bitmap", true) != null)
+            {
+                Image bmap = (Image)data.GetData("System.Drawing.Bitmap", true);
+                if (bmap != null)
+                {
+                    return new Bitmap(bmap);
+                }
+            }
+            return null;
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            Bitmap newFrame = CaptureAndDisplayImage();
+            if (newFrame != null)
+            {
+                resultImage = new Bitmap(imageB.Width, imageB.Height);
+                Color mygreen = Color.FromArgb(0, 255, 0);
+                int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
+                int threshold = 10;
+                for (int x = 0; x < imageB.Width; x++)
+                {
+                    for (int y = 0; y < imageB.Height; y++)
+                    {
+                        Color fg = imageB.GetPixel(x, y);
+                        Color bg = imageA.GetPixel(x, y);
+                        int grey = (fg.R + fg.G + fg.B) / 3;
+                        bool s = Math.Abs(grey - greygreen) < threshold;
+                        if (s)
+                            resultImage.SetPixel(x, y, bg);
+                        else
+                            resultImage.SetPixel(x, y, fg);
+                    }
+                }
+                pictureBox3.Image = resultImage;
+            }
         }
     }
 }

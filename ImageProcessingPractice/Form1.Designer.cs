@@ -55,6 +55,7 @@
             button5 = new Button();
             comboBox1 = new ComboBox();
             timer1 = new System.Windows.Forms.Timer(components);
+            timer2 = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             menuStrip1.SuspendLayout();
@@ -257,7 +258,12 @@
             // 
             // timer1
             // 
+            timer1.Interval = 60;
             timer1.Tick += timer1_Tick;
+            // 
+            // timer2
+            // 
+            timer2.Interval = 60;
             // 
             // Form1
             // 
@@ -315,5 +321,6 @@
         private Button button5;
         private ComboBox comboBox1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer timer2;
     }
 }
