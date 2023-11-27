@@ -1,13 +1,14 @@
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using ImageProcessingPractice;
-
+using WebCamLib;
 namespace ImageProcessingPractice
 {
     public partial class Form1 : Form
     {
-        Bitmap loaded, processed;
+        Bitmap loaded, processed, resultImage;
         Bitmap imageA, imageB;
         Device[] mgaDevice = DeviceManager.GetAllDevices();
         public Form1()
@@ -15,6 +16,8 @@ namespace ImageProcessingPractice
             InitializeComponent();
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
+
         }
 
         private void Form1_Load(object sender, EventArgs e) { }
@@ -200,7 +203,7 @@ namespace ImageProcessingPractice
             saveFileDialog.Title = "Save Processed Image";
             saveFileDialog.ShowDialog();
 
-            if (saveFileDialog.FileName != "")
+            if (saveFileDialog.FileName.Trim() != "")
             {
                 processed.Save(saveFileDialog.FileName, ImageFormat.Png);
                 MessageBox.Show("Image saved successfully.");
@@ -233,7 +236,7 @@ namespace ImageProcessingPractice
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (mgaDevice.Length > 0)   
+            if (mgaDevice.Length > 0)
             {
                 Device d = DeviceManager.GetDevice(0);
                 d.ShowWindow(pictureBox1);
@@ -242,7 +245,7 @@ namespace ImageProcessingPractice
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Bitmap res = new Bitmap(imageB.Width, imageB.Height);
+            resultImage = new Bitmap(imageB.Width, imageB.Height);
             Color mygreen = Color.FromArgb(0, 0, 255);
             int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
             int threshold = 5;
@@ -253,17 +256,12 @@ namespace ImageProcessingPractice
                 {
                     Color pixel = imageB.GetPixel(x, y);
                     Color backpixel = imageA.GetPixel(x, y);
-
                     int grey = (pixel.R + pixel.G + pixel.B) / 3;
                     int subtractvalue = Math.Abs(grey - greygreen);
-
-                    if (subtractvalue > threshold)
-                        res.SetPixel(x, y, pixel);
-                    else
-                        res.SetPixel(x, y, backpixel);
+                    resultImage.SetPixel(x, y, subtractvalue > threshold? pixel : backpixel);
                 }
             }
-            pictureBox3.Image = res;
+            pictureBox3.Image = resultImage;
         }
 
 

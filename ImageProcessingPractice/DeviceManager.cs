@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
-namespace ImageProcessingPractice
+namespace WebCamLib
 {
-    internal class DeviceManager
+    public class DeviceManager
     {
+	//	[DllImport("inpout32.dll", EntryPoint="Out32")]
+	//	public static extern void Output(int adress, int value);
+		
+	//	[DllImport("inpout32.dll", EntryPoint="Inp32")]
+	//	public static extern int Input(int adress);
+		
         [DllImport("avicap32.dll")]
         protected static extern bool capGetDriverDescriptionA(short wDriverIndex,
-            [MarshalAs(UnmanagedType.VBByRefStr)] ref String lpszName,
+            [MarshalAs(UnmanagedType.VBByRefStr)]ref String lpszName,
            int cbName, [MarshalAs(UnmanagedType.VBByRefStr)] ref String lpszVer, int cbVer);
 
         static ArrayList devices = new ArrayList();
@@ -30,7 +33,7 @@ namespace ImageProcessingPractice
                     d.Name = dName.Trim();
                     d.Version = dVersion.Trim();
 
-                    devices.Add(d);
+                    devices.Add(d);                    
                 }
             }
 
