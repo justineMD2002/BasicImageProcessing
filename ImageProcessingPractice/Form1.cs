@@ -5,6 +5,8 @@ using AForge.Video.DirectShow;
 using ImageProcessingPractice;
 using WebCamLib;
 using HNUDIP;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
+
 namespace ImageProcessingPractice
 {
     public partial class Form1 : Form
@@ -253,7 +255,7 @@ namespace ImageProcessingPractice
                 MessageBox.Show("Please input an image.");
                 return;
             }
-
+            ImageProcess.Subtract(ref imageB, ref imageA, ref resultImage, 100);
             resultImage = new Bitmap(imageB.Width, imageB.Height);
             Color mygreen = Color.FromArgb(0, 0, 255);
             int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
