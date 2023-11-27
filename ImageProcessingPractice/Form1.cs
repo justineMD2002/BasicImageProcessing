@@ -10,14 +10,16 @@ namespace ImageProcessingPractice
     {
         Bitmap loaded, processed, resultImage;
         Bitmap imageA, imageB;
-        Device[] mgaDevice = DeviceManager.GetAllDevices();
+        Boolean isCamera;
+        Device selectedDevice;
+        Device[] devices;
         public Form1()
         {
             InitializeComponent();
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
-
+            comboBox1.Visible = false;
         }
 
         private void Form1_Load(object sender, EventArgs e) { }
@@ -236,15 +238,22 @@ namespace ImageProcessingPractice
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (mgaDevice.Length > 0)
+            comboBox1.Visible = true;
+            devices = DeviceManager.GetAllDevices();
+            foreach (Device device in devices)
             {
-                Device d = DeviceManager.GetDevice(0);
-                d.ShowWindow(pictureBox1);
+                comboBox1.Items.Add(device.Name);
             }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if(pictureBox1.Image == null || pictureBox2.Image == null)
+            {
+                MessageBox.Show("Please input an image.");
+                return;
+            }
+
             resultImage = new Bitmap(imageB.Width, imageB.Height);
             Color mygreen = Color.FromArgb(0, 0, 255);
             int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
@@ -258,7 +267,7 @@ namespace ImageProcessingPractice
                     Color backpixel = imageA.GetPixel(x, y);
                     int grey = (pixel.R + pixel.G + pixel.B) / 3;
                     int subtractvalue = Math.Abs(grey - greygreen);
-                    resultImage.SetPixel(x, y, subtractvalue > threshold? pixel : backpixel);
+                    resultImage.SetPixel(x, y, subtractvalue > threshold ? pixel : backpixel);
                 }
             }
             pictureBox3.Image = resultImage;
@@ -269,6 +278,18 @@ namespace ImageProcessingPractice
         {
             Device d = DeviceManager.GetDevice(0);
             d.Stop();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedDevice = DeviceManager.GetDevice(comboBox1.SelectedIndex);
+            selectedDevice.Init(pictureBox1.Height, pictureBox1.Width, pictureBox1.Handle.ToInt32());
+            timer1.Enabled = true;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            selectedDevice.Sendmessage();
         }
     }
 }

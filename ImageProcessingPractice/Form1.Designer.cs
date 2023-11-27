@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             pictureBox1 = new PictureBox();
             pictureBox2 = new PictureBox();
             menuStrip1 = new MenuStrip();
@@ -52,6 +53,8 @@
             button3 = new Button();
             button4 = new Button();
             button5 = new Button();
+            comboBox1 = new ComboBox();
+            timer1 = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             menuStrip1.SuspendLayout();
@@ -195,7 +198,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(603, 355);
+            button1.Location = new Point(603, 347);
             button1.Name = "button1";
             button1.Size = new Size(121, 23);
             button1.TabIndex = 5;
@@ -205,7 +208,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(603, 384);
+            button2.Location = new Point(603, 376);
             button2.Name = "button2";
             button2.Size = new Size(121, 23);
             button2.TabIndex = 6;
@@ -215,7 +218,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(603, 471);
+            button3.Location = new Point(603, 463);
             button3.Name = "button3";
             button3.Size = new Size(121, 23);
             button3.TabIndex = 7;
@@ -225,7 +228,7 @@
             // 
             // button4
             // 
-            button4.Location = new Point(603, 413);
+            button4.Location = new Point(603, 405);
             button4.Name = "button4";
             button4.Size = new Size(121, 23);
             button4.TabIndex = 8;
@@ -235,7 +238,7 @@
             // 
             // button5
             // 
-            button5.Location = new Point(603, 442);
+            button5.Location = new Point(603, 434);
             button5.Name = "button5";
             button5.Size = new Size(121, 23);
             button5.TabIndex = 9;
@@ -243,11 +246,25 @@
             button5.UseVisualStyleBackColor = true;
             button5.Click += button5_Click;
             // 
+            // comboBox1
+            // 
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Location = new Point(603, 492);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(121, 23);
+            comboBox1.TabIndex = 10;
+            comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+            // 
+            // timer1
+            // 
+            timer1.Tick += timer1_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(775, 574);
+            Controls.Add(comboBox1);
             Controls.Add(button5);
             Controls.Add(button4);
             Controls.Add(button3);
@@ -296,5 +313,7 @@
         private Button button3;
         private Button button4;
         private Button button5;
+        private ComboBox comboBox1;
+        private System.Windows.Forms.Timer timer1;
     }
 }
